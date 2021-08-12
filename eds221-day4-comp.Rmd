@@ -1,0 +1,182 @@
+---
+title: "day 4 comp"
+author: "Daniel Kerstan"
+date: "8/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(palmerpenguins)
+```
+
+
+Warm up
+```{r}
+quarter_splits <- c(1.0, 1.1, 1.2, 1.1, 1.4, 1.5, 1.6, 1.4)
+
+sum_quarter_splits <- vector(mode = "numeric")
+
+for (i in seq_along(quarter_splits)-1) {
+  sum <- quarter_splits[i] + quarter_splits[i+1]
+  sum_quarter_splits[i] <- sum
+}
+
+sum_quarter_splits
+
+
+
+```
+
+
+
+Functions practice
+
+```{r}
+birddog_sum <- function(bird, dog) {
+  
+  if(bird > 50) {
+    stop("Birds can't be greater than 50")
+  }
+  
+if (bird < 10) {
+  message("cool little bird")
+}
+  
+  if (dog < 0) {
+    warning("can a dog be less than 0 pounds?")
+  }
+  
+  add_birddog <- bird + dog
+  return(add_birddog)
+}
+
+
+bird100_dog5 <- birddog_sum(bird = 6, dog = -1)
+
+bird100_dog5
+
+```
+
+
+
+```{r}
+say_hello <- function(friend, weekday) {
+  print(paste("hello,", friend, "have a great", weekday))
+}
+
+say_hello("Teddy", "Thursday")
+
+
+```
+
+
+```{r}
+find_multiple <- function(a, b) {
+  my_multiplication <- a * b 
+  return(my_multiplication)
+}
+
+find_multiple(10, 6)
+
+find_multiple(10, 6) + 12
+
+
+```
+
+Functions with conditions
+
+```{r}
+animal_age <- function(animal, age) {
+  
+  #if (animal != "dog" & animal != "goat") {
+    #stop("animal must be dog or goat")
+  #}
+  
+  if (!animal %in% c("dog", "goat")) {
+    stop("animal must be a dog or a goat")
+  }
+  if (animal == "dog") {
+    creature_age <- age * 7
+  }
+  else if (animal == "goat") {
+    creature_age <- age * 4.7
+  }
+  return(creature_age)
+  
+}
+
+
+#animal_age(animal = "sheep", age = 13)
+
+
+
+```
+
+
+
+```{r}
+adelie_gentoo <- penguins %>% 
+  filter(species %in% c("Adelie", "Gentoo"))
+```
+
+```{r}
+adelie_gentoo_wrong <- penguins %>% 
+  filter(species == c("Adelie", "Gentoo"))
+```
+
+
+```{r}
+adelie_gentoo_other <- penguins %>% 
+  filter(species != "Chinstrap")
+
+```
+
+Combine functions and for loops
+```{r}
+df_means <- function(df) {
+  for (i in 1:ncol(df)) {
+    col_mean <- mean(df[[i]], na.rm = TRUE)
+    column_name <- colnames(df[i])
+    print(paste("Mean of", column_name, ":", col_mean))
+  }
+}
+
+df_means(df = penguins)
+
+```
+
+```{r}
+# make a subset of only structureal size variables from the penguins dataset for Chinstrap
+
+adelie_sizes <- penguins %>% 
+  filter(species == "Chinstrap") %>% 
+  select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+
+df_means(df = adelie_sizes)
+
+
+```
+
+
+Condition to check class of an input
+
+```{r}
+lunchtime <- function(tacos, price_per) {
+  if (is.numeric(tacos) == FALSE) {
+    stop("You must input a number of tacos")
+  }
+  tot_price <- tacos * price_per
+  return(tot_price)
+}
+
+
+lunchtime(tacos = 5, price_per = 2.50)
+
+
+
+
+```
+
+
