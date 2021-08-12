@@ -180,3 +180,101 @@ lunchtime(tacos = 5, price_per = 2.50)
 ```
 
 
+use values from a data frame to calculate something based on user input 
+
+filter function
+```{r}
+# calculate gw transport rate
+
+gw_rate <- function(site) {
+  
+  gw_slope_depth <- data.frame(site_name = c("mountain", "prarie", "desert", "beach"),
+                               depth = c(32, 42, 63, 2), slope = c(11.2, 0.4, 0.8, 2.6))
+  site_select <- dplyr::filter(gw_slope_depth, site_name == site)
+  
+  transport_rate <- 1.4 * site_select$slope + 3.6 * site_select$depth
+  
+  return(transport_rate)
+  
+}
+
+gw_rate("mountain")
+```
+switch function
+```{r}
+gw_rate_switch <- function(site) {
+  gw_slope_depth <- switch(site, 
+                           "mountain" = c(32, 11.2),
+                           "prarie" = c(41, 0.4),
+                           "desert" = c(63, 0.8),
+                           "beach" = c(2, 2.6))
+  transport_rate <- 1.4 * gw_slope_depth[2] + 3.6 * gw_slope_depth[1]
+  
+  return(transport_rate)
+  
+  
+  
+}
+
+gw_rate_switch("mountain")
+```
+
+Logistic growth
+```{r}
+logistic_growth <- function(K, N0, r, time) {
+ Nt <-  K / (1 + ((K - N0) / N0) * exp(-r * time))
+ print(Nt)
+}
+
+logistic_growth(K = 5000, N0 = 200, r = 0.43, time = 6)
+
+
+time_vec <- seq(from = 0, to = 35, by = 0.1)
+bacterial_growth <- logistic_growth(K = 5000, N0 = 200, r = 0.43, time = time_vec)
+
+bacterial_df <- data.frame(time_vec, bacterial_growth)
+
+```
+
+```{r}
+r_seq <- seq(from = 0.20, to = 0.40, by = 0.01)
+time_vec <- seq(from = 0, to = 35, by = 0.1)
+
+
+out_matrix <- matrix(nrow = length(time_vec), ncol = length(r_seq))
+
+# N0 = 100, K = 6000
+
+for (i in seq_along(r_seq)) {
+  for(j in seq_along(time_vec)) {
+    pop <- logistic_growth(K = 6000, N0 = 100, r = r_seq[i], time = time_vec[j])
+    out_matrix[j, i] <- pop
+  }
+}
+
+
+# wrangling
+
+out_df <- data.frame(time = time_vec, out_matrix)
+
+#update column names
+
+colnames(out_df) <- c("time", paste0("gr_", r_seq))
+
+
+# make a long form (tidy version) of this data
+
+out_df_long <- out_df %>%  
+  pivot_longer(-time, names_to = "growth_rate", values_to = "population")
+
+# population over time with color depending on the growth rate
+population_graph <- ggplot(out_df_long, aes(x = time, y = population)) +
+                             geom_line(aes(color = growth_rate))
+population_graph
+
+
+
+
+```
+
+
